@@ -1,0 +1,1185 @@
+<!DOCTYPE html>
+<html lang="en-IN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>ARJUNA JEE 2027</title>
+    
+    <!-- External CSS Icons & Fonts -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- External JS Libraries -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    
+    <!-- Firebase SDKs for Automatic Live Sync -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+    
+    <!-- Local Stylesheet & Manifest -->
+    <link rel="stylesheet" href="style.css">
+    <link rel="manifest" href="manifest.json">
+    <link rel="apple-touch-icon" href="icon-192.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@500;700&family=Hind:wght@400;500;600&display=swap">
+    <meta name="theme-color" content="#10131C">
+
+    <!-- Service Worker Registration for Background Notifications -->
+    <script>
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+          navigator.serviceWorker.register('sw.js')
+            .then(reg => console.log('Service Worker Registered Successfully!'))
+            .catch(err => console.log('Service Worker Registration Failed: ', err));
+        });
+      }
+    </script>
+<script>try{var t=localStorage.getItem("arjunaHUD_theme");document.documentElement.setAttribute("data-theme",t==="white"?"light":"dark")}catch(e){}</script>
+</head>
+
+
+<body>
+<canvas id="bg3d" aria-hidden="true"></canvas>
+ <div id="view-login">
+    <div class="login-box">
+        <div class="logo-glow-icon" style="margin: 0 auto 15px auto; text-align: center;">
+            <i class="fas fa-atom" style="font-size: 2rem; color: var(--cyan-glow);"></i>
+        </div>
+        <div class="brand-title" style="font-size: 1.2rem; margin-bottom: 5px; text-align: center; font-weight: bold; color: var(--cyan-glow);">ARJUNA JEE 2027</div>
+        <div style="font-size: 0.75rem; color: var(--text-sub); margin-bottom: 20px; text-align: center;">Padhai shuru karne ke liye login karo</div>
+        
+        <!-- Input Fields -->
+        <input type="text" id="studentNameInput" class="input-box" placeholder="Aapka poora naam" style="width: 100%; padding: 10px; margin-bottom: 12px; background: #1f2937; border: 1px solid #374151; color: #fff; border-radius: 6px;">
+        
+        <input type="password" id="studentPassInput" class="input-box" placeholder="Secret PIN (jaise 2028)" style="width: 100%; padding: 10px; margin-bottom: 12px; background: #1f2937; border: 1px solid #374151; color: #fff; border-radius: 6px;">
+        
+        <!-- Naya Mobile Number Input Field -->
+        <input type="tel" id="studentPhoneInput" class="input-box" placeholder="WhatsApp number (10 digits)" maxlength="10" style="width: 100%; padding: 10px; margin-bottom: 20px; background: #1f2937; border: 1px solid #374151; color: #fff; border-radius: 6px;">
+        
+        <button class="btn-action" onclick="handleLogin()" style="width: 100%; padding: 10px; background: var(--cyan-glow); color: #000; font-weight: bold; border: none; border-radius: 6px; cursor: pointer;">Shuru karo</button>
+    </div>
+</div>
+
+         
+<div class="header-wrapper">
+    <header class="app-header" style="display: flex; justify-content: space-between; align-items: center; padding: 6px 10px; background: rgba(15, 23, 42, 0.95); backdrop-filter: blur(12px); border-bottom: 1px solid rgba(0, 240, 255, 0.2); width: 100%; box-sizing: border-box; overflow: hidden;">
+        
+        <!-- Left Side: Logo & Title -->
+        <div style="display: flex; align-items: center; gap: 6px; flex-shrink: 0;">
+            <div id="centerHubLogo" style="width: 28px; height: 28px; border-radius: 8px; background: rgba(255, 255, 255, 0.08); display: flex; align-items: center; justify-content: center; border: 1.2px solid var(--cyan-glow); box-shadow: 0 2px 10px rgba(0,240,255,0.2); cursor: pointer;" onclick="goBackToHub()">
+                <i class="fas fa-atom" style="font-size: 0.8rem; color: var(--cyan-glow);"></i>
+            </div>
+            <h2 style="font-size: 0.72rem; margin: 0; color: var(--cyan-glow); font-weight: 700; letter-spacing: 0.3px; white-space: nowrap;">Arjuna</h2>
+        </div>
+
+        <!-- Right Side: Interactive XP, Streak, Theme & Leaderboard Buttons -->
+        <div style="display: flex; align-items: center; gap: 4px; flex-shrink: 0;">
+            
+            <!-- XP Badge (Clickable for Leaderboard) -->
+            <div onclick="openXpLeaderboardModal()" title="View Leaderboard" style="background: rgba(255, 204, 0, 0.15); border: 1px solid #ffcc00; color: #ffcc00; padding: 2px 6px; border-radius: 6px; font-size: 0.62rem; font-weight: bold; cursor: pointer; display: flex; align-items: center; gap: 2px;">
+                ⚡ <span id="xpNumText">0</span> XP
+            </div>
+
+            <!-- Day Streak Badge -->
+            <div id="headerStreakDisplay" title="Current Daily Streak" style="background: rgba(245, 158, 11, 0.12); border: 1px solid rgba(245, 158, 11, 0.6); color: #f59e0b; padding: 2px 6px; border-radius: 6px; font-size: 0.62rem; font-weight: bold; white-space: nowrap; display: flex; align-items: center; gap: 2px;">
+                🔥 <span id="streakNumText">0</span> Days
+            </div>
+
+            <!-- Cycle Theme Icon -->
+            <div onclick="cycleAppTheme()" title="Theme Switcher" style="cursor: pointer; width: 26px; height: 26px; border-radius: 50%; background: rgba(0, 240, 255, 0.15); border: 1px solid var(--cyan-glow); display: flex; align-items: center; justify-content: center; color: var(--cyan-glow); flex-shrink: 0;">
+                <i class="fas fa-palette" style="font-size: 0.68rem;"></i>
+            </div>
+
+            <!-- Leaderboard Icon -->
+            <div onclick="switchTab('leaderboard')" title="Main Leaderboard" style="cursor: pointer; width: 26px; height: 26px; border-radius: 50%; background: rgba(236, 72, 153, 0.15); border: 1px solid #ec4899; display: flex; align-items: center; justify-content: center; color: #ec4899; flex-shrink: 0;">
+                <i class="fas fa-trophy" style="font-size: 0.68rem;"></i>
+            </div>
+
+        </div>
+    </header>
+</div>
+
+
+    <div class="container">
+        <!-- DASHBOARD VIEW -->
+        <div id="view-dashboard" class="section-view active">
+            <div class="hud-card" style="border-color: var(--cyan-glow);">
+                <div class="card-header-sm">BATCH & TEACHER SELECT OPTION</div>
+                <div style="font-size: 0.75rem; color: var(--text-sub); margin-bottom: 8px;">SELECT YOUR BATCH & TEACHERS:</div>
+                <label style="font-size: 0.7rem; color: var(--cyan-glow); font-weight: bold;">Select Batch:</label>
+                <select id="selectedBatch" class="input-box" onchange="saveBatchConfig()">
+                    <option value="Arjuna JEE 2027">Arjuna JEE 2027</option>
+                    <option value="Arjuna JEE 2028">Arjuna JEE 2028</option>
+                </select>
+                <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-top: 8px;">
+                    <div>
+                        <label style="font-size: 0.65rem; color: var(--text-sub);">Physics</label>
+                        <input type="text" id="teacherPhys" class="input-box" placeholder="TEACHER NAME" onchange="saveBatchConfig()">
+                    </div>
+                    <div>
+                        <label style="font-size: 0.65rem; color: var(--text-sub);">Chemistry</label>
+                        <input type="text" id="teacherChem" class="input-box" placeholder="TEACHER NAME" onchange="saveBatchConfig()">
+                    </div>
+                    <div>
+                        <label style="font-size: 0.65rem; color: var(--text-sub);">Maths</label>
+                        <input type="text" id="teacherMath" class="input-box" placeholder="TEACHER NAME" onchange="saveBatchConfig()">
+                    </div>
+                </div>
+            </div>
+                         
+            <div class="hud-card" style="text-align: center;">
+                <div class="card-header-sm">SUBJECT WISE SYLLABUS COMPLETION</div>
+                <div id="combinedSubjectCard" style="display: inline-block; cursor: pointer; margin-bottom: 10px;" onclick="toggleSubjectBreakdown()" title="Tap to view individual subjects">
+                    <div class="gauge-container" style="margin: 0 auto;">
+                        <canvas id="gaugeCombined"></canvas>
+                        <div class="gauge-center-text">
+                            <div class="gauge-percent" id="totalCombinedPercent">0%</div>
+                        </div>
+                    </div>
+                    <div class="gauge-subtext">OVERALL PROGRESS</div>
+                </div>
+                <div id="individualSubjectsContainer" class="gauge-grid" style="display: none; margin-top: 15px;">
+                    <div onclick="switchTab('roadmap'); switchSubject('physics');" style="cursor: pointer;">
+                        <div class="gauge-container">
+                            <canvas id="gaugePhysics"></canvas>
+                            <div class="gauge-center-text"><div class="gauge-percent" id="physPercent">0%</div></div>
+                        </div>
+                        <div class="gauge-subtext">PHYSICS</div>
+                    </div>
+                    <div onclick="switchTab('roadmap'); switchSubject('chemistry');" style="cursor: pointer;">
+                        <div class="gauge-container">
+                            <canvas id="gaugeChemistry"></canvas>
+                            <div class="gauge-center-text"><div class="gauge-percent" id="chemPercent">0%</div></div>
+                        </div>
+                        <div class="gauge-subtext">CHEMISTRY</div>
+                    </div>
+                    <div onclick="switchTab('roadmap'); switchSubject('maths');" style="cursor: pointer;">
+                        <div class="gauge-container">
+                            <canvas id="gaugeMaths"></canvas>
+                            <div class="gauge-center-text"><div class="gauge-percent" id="mathPercent">0%</div></div>
+                        </div>
+                        <div class="gauge-subtext">MATHS</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="hud-card">
+                <div class="card-header-sm">TOTAL PREPARATION STATS</div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; text-align: center; margin-top: 10px;">
+                    <div style="background: rgba(0, 0, 0, 0.2); padding: 10px; border-radius: 12px; border: 1px solid var(--glass-border);">
+                        <div style="font-size: 0.65rem; color: var(--text-sub);">TOTAL QUESTIONS SOLVED</div>
+                        <div id="totalQuesCount" style="font-size: 1.1rem; font-weight: 800; color: var(--cyan-glow); margin-top: 4px;">0</div>
+                    </div>
+                    <div style="background: rgba(0, 0, 0, 0.2); padding: 10px; border-radius: 12px; border: 1px solid var(--glass-border);">
+                        <div style="font-size: 0.65rem; color: var(--text-sub);">TOTAL LECTURES COMPLETED</div>
+                        <div id="totalLecCount" style="font-size: 1.1rem; font-weight: 800; color: var(--purple-glow); margin-top: 4px;">0</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="hud-card">
+                <div class="card-header-sm" style="color: var(--warning-color);">JEE MAIN 2028 COUNTDOWN</div>
+                <div id="jeeCountdown" style="font-size: 1.1rem; font-weight:700;">Calculating...</div>
+            </div>
+
+            <div class="hud-card" style="text-align: center; border-color: var(--cyan-glow);">
+                <div class="card-header-sm" style="color: var(--cyan-glow);">STUDY ANALYTICS & SCREEN TIME</div>
+                <div style="font-size: 0.75rem; color: var(--text-sub); margin-bottom: 12px;">Apne daily, weekly, aur monthly study hours aur subject-wise progress yahan dekhein!</div>
+                <button class="btn-action" style="border-color: var(--cyan-glow); color: var(--cyan-glow); margin: 0;" onclick="switchTab('analytics')">OPEN STUDY ANALYTICS</button>
+            </div>
+
+            <div class="hud-card" style="text-align: center;">
+                <div class="card-header-sm">ARJUNA OFFICIAL REPORT CARD</div>
+                <div style="font-size: 0.75rem; color: var(--text-sub); margin-bottom: 10px;">YOUR CURRENT REPORT CARD</div>
+                <button class="btn-action" onclick="downloadReportCard()">DOWNLOAD REPORT CARD (PDF)</button>
+            </div>
+        </div>
+
+        <!-- ROADMAP VIEW (Main Chapter List) -->
+        <div id="view-roadmap" class="section-view">
+            <div class="subject-selector">
+                <button class="sub-btn active" id="btn-physics" onclick="switchSubject('physics')">PHYSICS</button>
+                <button class="sub-btn" id="btn-chemistry" onclick="switchSubject('chemistry')">CHEMISTRY</button>
+                <button class="sub-btn" id="btn-maths" onclick="switchSubject('maths')">MATHS</button>
+            </div>
+            <div id="chaptersContainer"></div>
+        </div>
+
+        <!-- DEDICATED CHAPTER DEEP VIEW (PW STYLE UNIFIED HUB) -->
+        <div id="view-chapter-deep" class="section-view" style="display: none;">
+            <!-- Top Header Bar -->
+            <div style="display: flex; justify-content: space-between; align-items: center; background: rgba(15, 23, 42, 0.8); padding: 12px 16px; border-radius: 14px; border: 1px solid var(--cyan-glow); margin-bottom: 15px;">
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    <button class="btn-back-link" onclick="openSectionWithBack('roadmap')">
+                        <i class="fas fa-arrow-left"></i>
+                    </button>
+                    <div id="deepChapterTitle" style="font-size: 0.95rem; font-weight: bold; color: #fff;">Chapter Name</div>
+                </div>
+                <div style="font-size: 0.7rem; background: rgba(0,240,255,0.15); color: var(--cyan-glow); padding: 4px 10px; border-radius: 20px; font-weight: bold;" id="deepChapterGauge">0%</div>
+            </div>
+
+            <!-- PW Style Horizontal Scroll Filter Chips -->
+            <div style="display: flex; gap: 8px; overflow-x: auto; padding-bottom: 10px; margin-bottom: 15px; scrollbar-width: none;">
+                <button class="sub-btn active" id="chip-all" onclick="switchDeepTab('all')">All Summary</button>
+                <button class="sub-btn" id="chip-practice" onclick="switchDeepTab('practice')">Modules & Practice</button>
+                <button class="sub-btn" id="chip-backlog" onclick="switchDeepTab('backlog')">Backlogs</button>
+                <button class="sub-btn" id="chip-errors" onclick="switchDeepTab('errors')">Error Book</button>
+                <button class="sub-btn" id="chip-revision" onclick="switchDeepTab('revision')">Spaced Revision</button>
+                <button class="sub-btn" id="chip-formulas" onclick="switchDeepTab('formulas')">Formulas</button>
+                <button class="sub-btn" id="chip-school" onclick="switchDeepTab('school')">School Work</button>
+            </div>
+
+            <!-- Dynamic Content Container -->
+            <div id="deepChapterContentContainer"></div>
+        </div>
+
+        <!-- PRACTICE VIEW -->
+        <div id="view-practice" class="section-view">
+            <div class="hud-card" style="text-align: center;">
+                <div class="card-header-sm">TOTAL PRACTICE PROGRESS</div>
+                <div class="gauge-container" style="margin: 0 auto 15px auto;">
+                    <canvas id="gaugePracticeTotal"></canvas>
+                    <div class="gauge-center-text">
+                        <div class="gauge-percent" id="practiceTotalPercent">0 Qs</div>
+                    </div>
+                </div>
+                <div class="gauge-subtext" style="margin-bottom: 15px;">TOTAL QUESTIONS SOLVED</div>
+                <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 10px;">
+                    <div style="text-align: center;">
+                        <div class="gauge-container" style="width: 70px; height: 70px; margin: 0 auto;">
+                            <canvas id="gaugePracticePhysics"></canvas>
+                            <div class="gauge-center-text"><div style="font-size: 0.7rem; font-weight: 700; color: var(--cyan-glow);" id="practicePhysicsPercent">0%</div></div>
+                        </div>
+                        <div style="font-size: 0.65rem; color: var(--text-sub); margin-top: 4px; font-weight: 600;">PHYSICS</div>
+                    </div>
+                    <div style="text-align: center;">
+                        <div class="gauge-container" style="width: 70px; height: 70px; margin: 0 auto;">
+                            <canvas id="gaugePracticeChemistry"></canvas>
+                            <div class="gauge-center-text"><div style="font-size: 0.7rem; font-weight: 700; color: var(--purple-glow);" id="practiceChemistryPercent">0%</div></div>
+                        </div>
+                        <div style="font-size: 0.65rem; color: var(--text-sub); margin-top: 4px; font-weight: 600;">CHEMISTRY</div>
+                    </div>
+                    <div style="text-align: center;">
+                        <div class="gauge-container" style="width: 70px; height: 70px; margin: 0 auto;">
+                            <canvas id="gaugePracticeMaths"></canvas>
+                            <div class="gauge-center-text"><div style="font-size: 0.7rem; font-weight: 700; color: var(--success-color);" id="practiceMathsPercent">0%</div></div>
+                        </div>
+                        <div style="font-size: 0.65rem; color: var(--text-sub); margin-top: 4px; font-weight: 600;">MATHS</div>
+                    </div>
+                </div>
+            </div>
+            <div class="hud-card">
+                <div class="card-header-sm">CHAPTER-WISE QUESTION PRACTICE</div>
+                <div class="subject-selector" style="margin-top: 10px;">
+                    <button class="sub-btn active" id="btn-practice-physics" onclick="switchPracticeSubject('physics')">PHYSICS</button>
+                    <button class="sub-btn" id="btn-practice-chemistry" onclick="switchPracticeSubject('chemistry')">CHEMISTRY</button>
+                    <button class="sub-btn" id="btn-practice-maths" onclick="switchPracticeSubject('maths')">MATHS</button>
+                </div>
+                <div id="practiceChaptersContainer"></div>
+            </div>
+        </div>
+
+<div id="view-todo" class="section-view" style="display: none; padding: 15px;">
+    
+<!-- Today's Study Goals Card with Line Progress Bar & Task Count -->
+<div class="hud-card" style="padding: 14px 16px; background: rgba(3,7,18,0.7); border: 1px solid var(--border-color); border-radius: 12px; margin-bottom: 12px;">
+    
+    <!-- Top Row: Title and Pending Task Count (Percentage + Number Added) -->
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+        <div>
+            <div style="font-size: 0.85rem; font-weight: bold; color: #fff; letter-spacing: 0.5px;">TODAY'S STUDY GOALS</div>
+            <div style="font-size: 0.7rem; color: var(--text-sub);" id="todoProgressText">0% Completed (0 Tasks Left)</div>
+        </div>
+        <div style="font-size: 0.75rem; color: var(--cyan-glow); font-weight: bold;" id="todoTaskCountText">
+            0 Tasks Left
+        </div>
+    </div>
+
+    <!-- Line Progress Bar Container -->
+    <div style="width: 100%; background: rgba(255,255,255,0.1); height: 8px; border-radius: 4px; overflow: hidden; margin-top: 10px;">
+        <div id="todoLineProgressBar" style="width: 0%; height: 100%; background: linear-gradient(90deg, var(--cyan-glow), #10b981); transition: width 0.3s ease;"></div>
+    </div>
+
+</div>
+
+ <!-- QUICK LECTURE & L-D-N TASK ADDER -->
+<div class="task-input-container hud-card" style="border-color: var(--cyan-glow); margin-bottom: 15px; padding: 15px;">
+    <div class="card-header-sm" style="color: var(--cyan-glow); font-size: 0.78rem; font-weight: bold; margin-bottom: 6px;">
+        <i class="fas fa-plus-circle"></i> QUICK LECTURE TO-DO & TASK ADDER
+    </div>
+    <div style="font-size: 0.68rem; color: var(--text-sub); margin-bottom: 10px;">Target date, subject aur chapter select karein (L-D-N included):</div>
+    
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 8px;">
+        <div>
+            <label style="font-size: 0.58rem; color: var(--text-sub); display: block; margin-bottom: 2px;">TARGET DATE</label>
+            <input type="date" id="quickDate" class="input-box" style="margin-bottom:0; width:100%; box-sizing:border-box; font-size:0.75rem; padding:6px;">
+        </div>
+        <div>
+            <label style="font-size: 0.58rem; color: var(--text-sub); display: block; margin-bottom: 2px;">SELECT SUBJECT</label>
+            <select id="quickSub" class="input-box" onchange="loadChaptersForQuickLog()" style="margin-bottom:0; width:100%; box-sizing:border-box; font-size:0.75rem; padding:6px;">
+                <option value="physics">PHYSICS</option>
+                <option value="chemistry">CHEMISTRY</option>
+                <option value="maths">MATHS</option>
+            </select>
+        </div>
+    </div>
+    
+    <div style="margin-bottom: 8px;">
+        <label style="font-size: 0.58rem; color: var(--text-sub); display: block; margin-bottom: 2px;">SELECT CHAPTER</label>
+        <select id="quickChapter" class="input-box" style="margin-bottom:0; width:100%; box-sizing:border-box; font-size:0.75rem; padding:6px;"></select>
+    </div>
+
+    <!-- Start Time aur End Time Inputs -->
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 10px;">
+        <div>
+            <label style="font-size: 0.58rem; color: var(--text-sub); display: block; margin-bottom: 2px;">START TIME</label>
+            <input type="time" id="quickStartTime" class="input-box" style="margin:0; width:100%; box-sizing:border-box; font-size:0.75rem; padding:6px;">
+        </div>
+        <div>
+            <label style="font-size: 0.58rem; color: var(--text-sub); display: block; margin-bottom: 2px;">END TIME</label>
+            <input type="time" id="quickEndTime" class="input-box" style="margin:0; width:100%; box-sizing:border-box; font-size:0.75rem; padding:6px;">
+        </div>
+    </div>
+
+    <button type="button" class="btn-action" style="margin: 0; width: 100%; background: linear-gradient(135deg, #00f0ff, #0077ff); color: #000; font-weight: bold; border: none; padding: 7px; border-radius: 6px; cursor: pointer; font-size: 0.75rem;" onclick="logQuickLectureAsTodo()">+ ADD LECTURE WITH L-D-N</button>
+</div>
+
+<!-- CUSTOM TASK & CATEGORY ADDER -->
+<div class="hud-card" style="border-color: #ffcc00; padding: 15px; margin-bottom: 15px;">
+    <div style="font-size: 0.78rem; font-weight: bold; color: #ffcc00; margin-bottom: 8px;">👑 CUSTOM TASK & CATEGORY ADDER</div>
+             
+    <!-- Target Date Input for Custom Task -->
+    <div style="margin-bottom: 8px;">
+        <label style="font-size: 0.58rem; color: var(--text-sub); display: block; margin-bottom: 2px;">TARGET DATE</label>
+        <input type="date" id="customTaskDate" class="input-box" style="margin-bottom:0; width:100%; box-sizing:border-box; font-size:0.75rem; padding:6px;">
+    </div>
+
+    <input type="text" id="taskInputText" placeholder="Task ka naam likhein (e.g., Rotational Motion)..." style="width: 100%; padding: 7px 10px; margin-bottom: 8px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.2); color: #fff; border-radius: 6px; box-sizing: border-box; font-size: 0.75rem; outline: none;">
+    
+    <div style="display: flex; gap: 8px; margin-bottom: 8px;">
+        <select id="taskCategorySelect" onchange="handleCustomCategoryChange()" style="flex: 1; padding: 7px; background: #0f172a; border: 1px solid #ffcc00; color: #fff; border-radius: 6px; font-size: 0.72rem; outline: none;">
+            <option value="Lecture">🎥 Lecture</option>
+            <option value="Spaced Revision">🔄 Spaced Revision</option>
+            <option value="Practice Session">✍️ Practice Session</option>
+            <option value="Backlog">⏳ Backlog</option>
+            <option value="Other">📌 Other / Personal</option>
+        </select>
+    </div>
+
+    <!-- Dynamic Fields for Practice Session (Qty, Subject, Chapter) -->
+    <div id="practiceExtraFields" style="display: none; background: rgba(255,204,0,0.05); border: 1px dashed rgba(255,204,0,0.3); padding: 8px; border-radius: 6px; margin-bottom: 8px;">
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-bottom: 6px;">
+            <div>
+                <label style="font-size: 0.55rem; color: #ffcc00; display: block; margin-bottom: 2px;">SELECT SUBJECT</label>
+                <select id="practiceSub" class="input-box" onchange="loadCustomChapters('practice')" style="margin:0; width:100%; font-size:0.7rem; padding:5px;">
+                    <option value="physics">PHYSICS</option>
+                    <option value="chemistry">CHEMISTRY</option>
+                    <option value="maths">MATHS</option>
+                </select>
+            </div>
+            <div>
+                <label style="font-size: 0.55rem; color: #ffcc00; display: block; margin-bottom: 2px;">QUANTITY (QUESTIONS)</label>
+                <input type="number" id="practiceQty" placeholder="e.g. 30" style="width: 100%; padding: 5px; background: #0f172a; border: 1px solid rgba(255,255,255,0.2); color: #fff; border-radius: 4px; font-size: 0.7rem; box-sizing: border-box;">
+            </div>
+        </div>
+        <div>
+            <label style="font-size: 0.55rem; color: #ffcc00; display: block; margin-bottom: 2px;">SELECT CHAPTER</label>
+            <select id="practiceChapter" class="input-box" style="margin:0; width:100%; font-size:0.7rem; padding:5px;"></select>
+        </div>
+    </div>
+
+    <!-- Dynamic Fields for Backlog (Subject & Chapter Reader) -->
+    <div id="backlogExtraFields" style="display: none; background: rgba(239,68,68,0.05); border: 1px dashed rgba(239,68,68,0.3); padding: 8px; border-radius: 6px; margin-bottom: 8px;">
+        <div style="margin-bottom: 6px;">
+            <label style="font-size: 0.55rem; color: #ef4444; display: block; margin-bottom: 2px;">SELECT SUBJECT FOR BACKLOG</label>
+            <select id="backlogSub" class="input-box" onchange="loadCustomChapters('backlog')" style="margin:0; width:100%; font-size:0.7rem; padding:5px;">
+                <option value="physics">PHYSICS</option>
+                <option value="chemistry">CHEMISTRY</option>
+                <option value="maths">MATHS</option>
+            </select>
+        </div>
+        <div>
+            <label style="font-size: 0.55rem; color: #ef4444; display: block; margin-bottom: 2px;">SELECT BACKLOG CHAPTER</label>
+            <select id="backlogChapter" class="input-box" style="margin:0; width:100%; font-size:0.7rem; padding:5px;"></select>
+        </div>
+    </div>
+
+    <!-- Start Time aur End Time Inputs -->
+    <div style="display: flex; gap: 8px; margin-bottom: 8px;">
+        <div style="flex: 1;">
+            <label style="font-size: 0.6rem; color: var(--text-sub); display: block; margin-bottom: 2px;">START TIME</label>
+            <input type="time" id="taskStartTime" class="input-box" style="margin:0; font-size:0.75rem; padding:6px;">
+        </div>
+        <div style="flex: 1;">
+            <label style="font-size: 0.6rem; color: var(--text-sub); display: block; margin-bottom: 2px;">END TIME</label>
+            <input type="time" id="taskEndTime" class="input-box" style="margin:0; font-size:0.75rem; padding:6px;">
+        </div>
+    </div>
+
+    <button onclick="addNewCustomTask()" style="width: 100%; background: #ffcc00; color: #000; font-weight: bold; border: none; padding: 7px; border-radius: 6px; cursor: pointer; font-size: 0.75rem;">
+        + Add Custom Task
+    </button>
+</div>
+
+    <!-- ACTIVE TASKS LIST CONTAINER -->
+    <div class="hud-card" style="border-color: var(--purple-glow); padding: 15px;">
+        <div class="card-header-sm" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+            <span style="color: var(--purple-glow); font-size: 0.78rem; font-weight: bold; display: flex; align-items: center; gap: 5px;"><i class="fas fa-tasks"></i> TODAY'S TASKS & PENDING DPPs</span>
+            <span style="font-size: 0.6rem; background: rgba(168,85,247,0.15); color: var(--purple-glow); padding: 2px 8px; border-radius: 20px; border: 1px solid rgba(168,85,247,0.3);">Tick L, D, N to complete</span>
+        </div>
+     <div id="todoListContainer"></div>
+
+    </div>
+
+</div>
+
+    <!-- ERROR BOOK TRACKER VIEW -->
+        <div id="view-errorbook" class="section-view">
+            <div class="hud-card" style="border-color: var(--danger-color);">
+                <div class="card-header-sm" style="color: var(--danger-color);">QUICK ERROR BOOK LOGGER</div>
+                <div style="margin-bottom: 10px;">
+                    <label style="font-size: 0.65rem; color: var(--text-sub); display: block; margin-bottom: 4px;">SUBJECT</label>
+                    <select id="errorSubSelect" class="input-box" onchange="loadChaptersForErrorBook()" style="margin-bottom: 0;">
+                        <option value="physics">Physics</option>
+                        <option value="chemistry">Chemistry</option>
+                        <option value="maths">Maths</option>
+                    </select>
+                </div>
+                <div style="margin-bottom: 10px;">
+                    <label style="font-size: 0.65rem; color: var(--text-sub); display: block; margin-bottom: 4px;">CHAPTER</label>
+                    <select id="errorChapSelect" class="input-box" style="margin-bottom: 0;"></select>
+                </div>
+                <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 10px; margin-bottom: 10px;">
+                    <div>
+                        <label style="font-size: 0.65rem; color: var(--text-sub); display: block; margin-bottom: 4px;">QUESTION MISTAKE DESC</label>
+                        <input type="text" id="errorDescInput" class="input-box" placeholder="e.g. Calculation error in Q.5" style="margin-bottom: 0;">
+                    </div>
+                    <div>
+                        <label style="font-size: 0.65rem; color: var(--text-sub); display: block; margin-bottom: 4px;">LEVEL</label>
+                        <select id="errorLevelSelect" class="input-box" style="margin-bottom: 0;">
+                            <option value="Moderate">Moderate</option>
+                            <option value="Tough">Tough</option>
+                            <option value="JEE Advanced">JEE Advanced</option>
+                            <option value="Silly Mistake">Silly Mistake</option>
+                        </select>
+                    </div>
+                </div>
+                <div style="margin-bottom: 12px;">
+                    <label style="font-size: 0.65rem; color: var(--text-sub); display: block; margin-bottom: 4px;">ATTACH SOLUTION IMAGE (Optional)</label>
+                    <input type="file" id="errorImageInput" accept="image/*" class="input-box" style="margin-bottom: 0; padding: 6px; font-size: 0.7rem;">
+                </div>
+                <button class="btn-action" style="border-color: var(--danger-color); color: var(--danger-color);" onclick="saveQuickErrorItemWithImage()">+ ADD TO ERROR BOOK</button>
+            </div>
+                         
+            <div class="hud-card" style="border-color: var(--danger-color);">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                    <div class="card-header-sm" style="color: var(--danger-color); margin-bottom: 0;">VIEW SPECIFIC CHAPTER ERRORS</div>
+                    <button onclick="exportErrorBookPDF()" style="background: var(--danger-color); color: #fff; border: none; padding: 4px 8px; border-radius: 4px; font-size: 0.65rem; cursor: pointer; font-weight: bold;">PDF REPORT</button>
+                </div>
+                <div style="margin-bottom: 10px;">
+                    <label style="font-size: 0.65rem; color: var(--text-sub); display: block; margin-bottom: 4px;">SELECT CHAPTER TO INSPECT</label>
+                    <select id="filterChapSelect" class="input-box" onchange="renderErrorBook()" style="margin-bottom: 0;">
+                        <option value="ALL">-- Show All Chapters --</option>
+                    </select>
+                </div>
+            </div>
+            <div id="errorBookContainer"></div>
+        </div>
+
+        <!-- TEST ANALYSIS VIEW -->
+        <div id="view-testanalysis" class="section-view">
+            <div class="hud-card" style="border-color: var(--purple-glow);">
+                <div class="card-header-sm" style="color: var(--purple-glow);">ADD NEW MOCK TEST RESULT</div>
+                <input type="text" id="test-name" class="input-box" placeholder="Test Name (e.g. Mock Test 1)">
+                <div style="display: flex; gap: 10px;">
+                    <input type="number" id="test-score" class="input-box" placeholder="Marks Obtained">
+                    <input type="number" id="test-total" class="input-box" placeholder="Total Marks">
+                </div>
+                <textarea id="test-mistakes" class="input-box" style="height:60px;" placeholder="Analyze your errors..."></textarea>
+                <label class="image-upload-label" for="testImageInput">ADD TEST RESULT SCREENSHOT</label>
+                <input type="file" id="testImageInput" accept="image/*" style="display:none;" onchange="previewImage(this, 'testImgPreview', 'tempTestImg')">
+                <img id="testImgPreview" class="img-preview" src="" alt="Preview">
+                <button class="btn-action" style="border-color: var(--purple-glow); color: var(--purple-glow); margin-top:10px;" onclick="addTestAnalysisIndexedDB()">ADD TEST ANALYSIS</button>
+            </div>
+            <div class="hud-card" style="margin-bottom: 15px;">
+                <div class="chap-title" style="margin-bottom: 10px;">TEST PERFORMANCE GRAPH</div>
+                <div style="position: relative; height: 200px; width: 100%;">
+                    <canvas id="testPerformanceChart"></canvas>
+                </div>
+            </div>
+            <div style="font-size: 0.85rem; font-weight: 700; margin-bottom: 10px; color: var(--purple-glow);">RECENT TEST PERFORMANCE</div>
+            <div id="test-history-list"></div>
+        </div>
+
+        <!-- SCHOOL TRACKER VIEW -->
+        <div id="view-school" class="section-view">
+            <div style="font-size: 0.85rem; font-weight: 700; margin-bottom: 12px; color: var(--cyan-glow);">SCHOOL SYLLABUS TRACKER</div>
+            <div class="subject-selector">
+                <button class="sub-btn active" id="btn-school-physics" onclick="switchSchoolSubject('physics')">PHYSICS</button>
+                <button class="sub-btn" id="btn-school-chemistry" onclick="switchSchoolSubject('chemistry')">CHEMISTRY</button>
+                <button class="sub-btn" id="btn-school-maths" onclick="switchSchoolSubject('maths')">MATHS</button>
+            </div>
+            <div id="schoolChaptersContainer"></div>
+        </div>
+
+<!-- BACKLOG TRACKER VIEW -->
+<div id="view-backlog" class="section-view" style="display: none; padding: 15px;">
+    
+    <!-- Top Backlog Banner Header with Percentage Progress Bar -->
+    <div class="hud-card" style="background: rgba(15, 23, 42, 0.85); border-color: var(--cyan-glow); padding: 16px; margin-bottom: 12px;">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+            <div>
+                <div style="font-size: 0.7rem; color: var(--cyan-glow); font-weight: bold; letter-spacing: 1px;">BACKLOG RECOVERY HUD</div>
+                <div style="font-size: 0.75rem; color: var(--text-sub); margin-top: 2px;" id="backlogProgressText">0% Completed (0/0)</div>
+            </div>
+            <div id="totalBacklogCountHUD" style="font-size: 0.85rem; font-weight: 800; color: var(--warning-color);">0 Items Left</div>
+        </div>
+        <!-- To-Do Jaisa Line Progress Bar -->
+        <div style="width: 100%; background: rgba(255,255,255,0.1); height: 8px; border-radius: 4px; overflow: hidden; margin-top: 10px;">
+            <div id="backlogLineProgressBar" style="width: 0%; height: 100%; background: linear-gradient(90deg, var(--warning-color), #10b981); transition: width 0.3s ease;"></div>
+        </div>
+    </div>
+
+    <!-- Original Backlog Banner Header & Form -->
+    <div class="hud-card" style="background: rgba(15, 23, 42, 0.7); border-color: var(--cyan-glow); padding: 16px;">
+        <div style="font-size: 0.7rem; color: var(--cyan-glow); font-weight: bold; letter-spacing: 1px;">MANAGEMENT PANEL</div>
+        <div style="font-size: 0.75rem; color: var(--text-sub); margin-top: 2px;">Track and clear your pending self-study sessions automatically.</div>
+        
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 14px; background: rgba(3,7,18,0.6); padding: 10px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.05);">
+            <div>
+                <div style="font-size: 0.6rem; color: var(--text-sub);">TOTAL PENDING BACKLOGS</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Hidden Form Card -->
+    <div id="backlogInputFormCard" class="hud-card" style="border-color: rgba(255,255,255,0.1); display: none;">
+        <!-- Row 1: Subject & Chapter -->
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 8px;">
+            <select id="backlogSubSelect" class="input-box" onchange="loadChaptersForBacklog()" style="margin:0; font-size:0.75rem;">
+                <option value="physics">Physics</option>
+                <option value="chemistry">Chemistry</option>
+                <option value="maths">Maths</option>
+            </select>
+            <select id="backlogChapSelect" class="input-box" style="margin:0; font-size:0.75rem;"></select>
+        </div>
+
+        <!-- Row 2: Topic Desc & Quantity Count -->
+        <div style="display: grid; grid-template-columns: 3fr 1fr; gap: 8px; margin-bottom: 8px;">
+            <input type="text" id="backlogTaskInput" class="input-box" placeholder="Topic / Lecture Desc" style="margin:0; font-size:0.75rem;">
+            <input type="number" id="backlogCountInput" value="1" min="1" max="10" title="Quantity / Lectures Count" class="input-box" style="margin:0; font-size:0.75rem; text-align:center;">
+        </div>
+
+        <button class="btn-action" style="margin: 0; width: 100%; font-size: 0.75rem;" onclick="saveQuickBacklogItem()">SAVE TO BACKLOG</button>
+    </div>
+
+    <!-- Subject Filters Tabs -->
+    <div style="display: flex; gap: 8px; margin-bottom: 12px; overflow-x: auto; padding-bottom: 4px;">
+        <button class="sub-btn active" id="btn-backlog-all" onclick="filterBacklogBySub('ALL')">ALL</button>
+        <button class="sub-btn" id="btn-backlog-physics" onclick="filterBacklogBySub('PHYSICS')">PHYSICS</button>
+        <button class="sub-btn" id="btn-backlog-chemistry" onclick="filterBacklogBySub('CHEMISTRY')">CHEMISTRY</button>
+        <button class="sub-btn" id="btn-backlog-maths" onclick="filterBacklogBySub('MATHS')">MATHS</button>
+    </div>
+
+    <!-- Subject-wise Summary Box -->
+    <div class="hud-card" style="border-color: var(--warning-color); background: rgba(245, 158, 11, 0.05);">
+        <div class="card-header-sm" style="color: var(--warning-color);">SUBJECT-WISE BACKLOG SUMMARY</div>
+        <div id="backlogSummaryContainer" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; text-align: center; margin-top: 8px;"></div>
+    </div>
+
+    <div style="font-size: 0.85rem; font-weight: 700; margin-bottom: 10px; color: var(--warning-color);">PENDING BACKLOGS</div>
+    
+    <!-- Backlog Items List Container -->
+    <div id="backlogContainer" style="display: flex; flex-direction: column; gap: 10px;"></div>
+</div>
+
+        <!-- REVISION TRACKER VIEW -->
+        <div id="view-revision" class="section-view">
+            <div class="hud-card" style="border-color: var(--success-color);">
+                <div class="card-header-sm" style="color: var(--success-color);">SPACED REVISION TRACKER (1 - 3 - 7 DAYS)</div>
+                <div style="font-size: 0.75rem; color: var(--text-sub); margin-bottom: 12px;">EVERY CHAPTER REVISE AFTER COMPLETION.</div>
+                <div class="subject-selector" style="margin-bottom: 15px;">
+                    <button class="sub-btn active" id="btn-rev-physics" onclick="switchRevisionSubject('physics')">PHYSICS</button>
+                    <button class="sub-btn" id="btn-rev-chemistry" onclick="switchRevisionSubject('chemistry')">CHEMISTRY</button>
+                    <button class="sub-btn" id="btn-rev-maths" onclick="switchRevisionSubject('maths')">MATHS</button>
+                </div>
+            </div>
+            <div id="revisionChaptersContainer"></div>
+        </div>
+
+        <!-- SETTINGS VIEW -->
+        <div id="view-settings" class="section-view">
+            <div class="hud-card">
+                <div class="card-header-sm">DATA BACKUP & RESTORE</div>
+                <button class="btn-action" onclick="exportBackup()">Download Backup (JSON)</button>
+                <input type="file" id="importFile" style="display:none;" onchange="importBackup(event)">
+                <button class="btn-action" style="border-color: var(--purple-glow); color: var(--purple-glow); margin-top:10px;" onclick="document.getElementById('importFile').click()">Restore Backup</button>
+                <button class="btn-action" style="border-color: var(--danger-color); color: var(--danger-color); margin-top:20px;" onclick="logoutUser()">Logout / Switch User</button>
+            </div>
+        </div>
+
+<!-- FORMULA CHEAT-SHEET & SEARCH VIEW -->
+        <div id="view-formulas" class="section-view" style="display: none;">
+            <div class="hud-card" style="border-color: var(--purple-glow); margin-bottom: 15px;">
+                <div class="card-header-sm" style="color: var(--purple-glow);">ADD NEW CUSTOM FORMULA FOR CHAPTER</div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 8px;">
+                    <select id="customFormSub" class="input-box" onchange="loadChaptersForFormulaAdder()" style="margin-bottom:0;">
+                        <option value="physics">Physics</option>
+                        <option value="chemistry">Chemistry</option>
+                        <option value="maths">Maths</option>
+                    </select>
+                    <select id="customFormChapSelect" class="input-box" style="margin-bottom:0;"></select>
+                </div>
+                <input type="text" id="customFormText" class="input-box" placeholder="Formula / Concept" style="margin-bottom:8px;">
+                <input type="text" id="customFormEx" class="input-box" placeholder="Example / Shortcut" style="margin-bottom:10px;">
+                <button class="btn-action" style="border-color: var(--purple-glow); color: var(--purple-glow); margin:0;" onclick="saveChapterFormula()">Save Formula to Chapter</button>
+            </div>
+            <div class="hud-card" style="border-color: var(--cyan-glow);">
+                <div class="card-header-sm" style="color: var(--cyan-glow);">CHAPTER-WISE FORMULA VIEWER</div>
+                <div style="font-size: 0.75rem; color: var(--text-sub); margin-bottom: 12px;">Subject aur specific chapter select karke formulas dekhein:</div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 12px;">
+                    <select id="filterFormSub" class="input-box" onchange="updateFilterChapters(); renderChapterFormulas();" style="margin-bottom:0;">
+                        <option value="all">All Subjects</option>
+                        <option value="physics">Physics</option>
+                        <option value="chemistry">Chemistry</option>
+                        <option value="maths">Maths</option>
+                    </select>
+                    <select id="filterFormChap" class="input-box" onchange="renderChapterFormulas()" style="margin-bottom:0;">
+                        <option value="ALL">-- All Chapters --</option>
+                    </select>
+                </div>
+                <input type="text" id="formulaSearchInput" class="input-box" placeholder="Search specific keyword..." oninput="renderChapterFormulas()" style="margin-bottom: 0;">
+            </div>
+            <div id="formulaListContainer"></div>
+        </div>
+
+        <!-- FLASHCARD ACTIVE RECALL VIEW -->
+        <div id="view-flashcards" class="section-view" style="display: none;">
+            <div class="hud-card" style="border-color: var(--cyan-glow); text-align: center; padding: 20px;">
+                <div class="card-header-sm" style="color: var(--cyan-glow); margin-bottom: 10px;">ACTIVE RECALL FLASHCARDS</div>
+                <div style="font-size: 0.75rem; color: var(--text-sub); margin-bottom: 20px;">Card par click karke answer dekhein aur apni memory test karein!</div>
+                <div id="flashcardWrapper" onclick="flipFlashcard()" style="perspective: 1000px; width: 100%; height: 180px; cursor: pointer; margin-bottom: 15px;">
+                    <div id="flashcardInner" style="position: relative; width: 100%; height: 100%; text-align: center; transition: transform 0.6s; transform-style: preserve-style; background: rgba(3, 7, 18, 0.8); border: 1px solid var(--cyan-glow); border-radius: 14px; display: flex; align-items: center; justify-content: center; padding: 15px; box-shadow: 0 0 20px rgba(0,240,255,0.1);">
+                        <div id="cardFront" style="position: absolute; width: 100%; height: 100%; backface-visibility: hidden; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 10px;">
+                            <span id="cardSubBadge" style="font-size: 0.65rem; color: var(--purple-glow); font-weight: 800; text-transform: uppercase; margin-bottom: 6px;">Physics</span>
+                            <div id="cardQuestionText" style="font-size: 0.95rem; font-weight: bold; color: #fff;">Loading Flashcard...</div>
+                            <span style="font-size: 0.65rem; color: var(--text-sub); margin-top: 10px;">(Click to Flip)</span>
+                        </div>
+                        <div id="cardBack" style="position: absolute; width: 100%; height: 100%; backface-visibility: hidden; transform: rotateY(180deg); display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 10px;">
+                            <span style="font-size: 0.65rem; color: var(--success-color); font-weight: 800; margin-bottom: 6px;">ANSWER / FORMULA</span>
+                            <div id="cardAnswerText" style="font-size: 0.85rem; font-family: monospace; color: var(--cyan-glow);">Answer here</div>
+                        </div>
+                    </div>
+                </div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                    <button class="btn-action" style="border-color: var(--danger-color); color: var(--danger-color); margin: 0;" onclick="rateFlashcard('forgot')">Forgot</button>
+                    <button class="btn-action" style="border-color: var(--success-color); color: var(--success-color); margin: 0;" onclick="rateFlashcard('remembered')">Remembered</button>
+                </div>
+                <div id="flashcardStats" style="font-size: 0.7rem; color: var(--text-sub); margin-top: 15px;">Progress: Card 1 of X</div>
+            </div>
+        </div>
+
+        <!-- WEAK TOPIC HEATMAP VIEW -->
+        <div id="view-heatmap" class="section-view" style="display: none;">
+            <div class="hud-card" style="border-color: var(--danger-color); margin-bottom: 15px;">
+                <div class="card-header-sm" style="color: var(--danger-color); margin-bottom: 6px;">WEAK TOPIC HEATMAP & ANALYTICS</div>
+                <div style="font-size: 0.75rem; color: var(--text-sub); margin-bottom: 15px;">Aapke Error Book aur test performance ke adhar par chapters ki status:</div>
+                <div class="subject-selector" style="margin-bottom: 15px;">
+                    <button class="sub-btn active" id="btn-heat-physics" onclick="renderHeatmap('physics')">PHYSICS</button>
+                    <button class="sub-btn" id="btn-heat-chemistry" onclick="renderHeatmap('chemistry')">CHEMISTRY</button>
+                    <button class="sub-btn" id="btn-heat-maths" onclick="renderHeatmap('maths')">MATHS</button>
+                </div>
+            </div>
+            <div id="heatmapGridContainer" style="display: grid; grid-template-columns: 1fr; gap: 10px;"></div>
+        </div>
+
+
+        <!-- LOFI MUSIC PLAYER VIEW -->
+        <div id="view-lofi" class="section-view" style="display: none;">
+            <div class="hud-card" style="border-color: var(--purple-glow); text-align: center; padding: 20px;">
+                <div class="card-header-sm" style="color: var(--purple-glow); margin-bottom: 8px;">FOCUS LOFI PLAYER</div>
+                <div id="lofiTrackTitle" style="font-size: 0.85rem; font-weight: bold; color: #fff; margin-bottom: 15px;">Chill Study Lofi Beat</div>
+                <audio id="lofiAudioElement" preload="auto" loop style="display: none;">
+                    <source src="https://cdn.pixabay.com/download/audio/2022/05/27/audio_1808fbf07a.mp3?filename=lofi-study-112191.mp3" type="audio/mpeg">
+                </audio>
+                <div style="display: flex; justify-content: center; gap: 10px;">
+                    <button id="lofiPlayBtn" class="btn-action" style="border-color: var(--purple-glow); color: var(--purple-glow); margin: 0; width: 130px;" onclick="playPauseLofi()">Play</button>
+                    <button class="btn-action" style="border-color: var(--cyan-glow); color: var(--cyan-glow); margin: 0; width: 110px;" onclick="changeLofiTrack()">Next</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- STUDY ANALYTICS & SCREEN-TIME VIEW -->
+        <div id="view-analytics" class="section-view" style="display: none;">
+            <div class="hud-card" style="border-color: var(--cyan-glow); position: relative; z-index: 10; clear: both;">
+                <div class="card-header-sm" style="color: var(--cyan-glow);">STUDY ANALYTICS & USAGE DASHBOARD</div>
+                <div style="font-size: 0.75rem; color: var(--text-sub); margin-bottom: 15px;">Daily, Weekly, aur Monthly apna study time aur question/lecture progress track karein!</div>
+                <div class="subject-selector" style="margin-bottom: 15px;">
+                    <button class="sub-btn active" id="btn-anal-daily" onclick="switchAnalyticsMode('daily')">DAILY</button>
+                    <button class="sub-btn" id="btn-anal-weekly" onclick="switchAnalyticsMode('weekly')">WEEKLY</button>
+                    <button class="sub-btn" id="btn-anal-monthly" onclick="switchAnalyticsMode('monthly')">MONTHLY</button>
+                </div>
+                <div style="margin-bottom: 15px;">
+                    <label style="font-size: 0.65rem; color: var(--text-sub); display: block; margin-bottom: 4px;" id="analyticsLabel">SELECT DATE</label>
+                    <input type="date" id="analyticsDateInput" class="input-box" onchange="renderAnalyticsData()" style="margin-bottom: 0;">
+                </div>
+                <div style="background: rgba(0, 240, 255, 0.05); border: 1px solid var(--cyan-glow); border-radius: 12px; padding: 14px; text-align: center; margin-bottom: 15px;">
+                    <div style="font-size: 0.7rem; color: var(--text-sub);">TOTAL STUDY TIME FOR SELECTED PERIOD</div>
+                    <div id="analTotalHours" style="font-size: 1.8rem; font-weight: 900; color: var(--cyan-glow); margin: 5px 0;">0.0 Hours</div>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px; font-size: 0.75rem; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 10px;">
+                        <div>Lectures: <span id="analTotalLecs" style="font-weight: bold; color: var(--purple-glow);">0 Completed</span></div>
+                        <div>Questions: <span id="analTotalQues" style="font-weight: bold; color: var(--success-color);">0 Solved</span></div>
+                    </div>
+                </div>
+                <div style="background: rgba(15, 23, 42, 0.5); padding: 12px; border-radius: 10px; border: 1px solid var(--border-color); margin-bottom: 10px;">
+                    <div style="font-size: 0.65rem; color: var(--cyan-glow); font-weight: bold; margin-bottom: 8px;">LOG SESSION (SUBJECT & CHAPTER WISE)</div>
+                    <div style="margin-bottom: 8px;">
+                        <label style="font-size: 0.6rem; color: var(--text-sub); display: block; margin-bottom: 2px;">SELECT SUBJECT</label>
+                        <select id="analSubjectSelect" class="input-box" onchange="loadChaptersForAnalytics()" style="margin-bottom:0; font-size:0.75rem;">
+                            <option value="physics">Physics</option>
+                            <option value="chemistry">Chemistry</option>
+                            <option value="maths">Maths</option>
+                        </select>
+                    </div>
+                    <div style="margin-bottom: 8px;">
+                        <label style="font-size: 0.6rem; color: var(--text-sub); display: block; margin-bottom: 2px;">SELECT CHAPTER</label>
+                        <select id="analChapterSelect" class="input-box" style="margin-bottom:0; font-size:0.75rem;"></select>
+                    </div>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 6px; margin-bottom: 10px;">
+                        <div>
+                            <label style="font-size: 0.6rem; color: var(--text-sub); display: block; margin-bottom: 2px;">Hours</label>
+                            <input type="number" id="manualStudyHours" class="input-box" placeholder="e.g. 2" style="margin-bottom:0; font-size:0.75rem;">
+                        </div>
+                        <div>
+                            <label style="font-size: 0.6rem; color: var(--text-sub); display: block; margin-bottom: 2px;">Lectures</label>
+                            <input type="number" id="analLecInput" class="input-box" placeholder="e.g. 1" style="margin-bottom:0; font-size:0.75rem;">
+                        </div>
+                        <div>
+                            <label style="font-size: 0.6rem; color: var(--text-sub); display: block; margin-bottom: 2px;">Questions</label>
+                            <input type="number" id="analQuesInput" class="input-box" placeholder="e.g. 25" style="margin-bottom:0; font-size:0.75rem;">
+                        </div>
+                    </div>
+                    <button class="btn-action" style="margin:0; padding:10px;" onclick="logStudyHoursAdvanced()">+ Save Study Activity</button>
+                </div>
+            </div>
+            <div class="hud-card" style="border-color: var(--purple-glow); position: relative; z-index: 10; clear: both;">
+                <div class="card-header-sm" style="color: var(--purple-glow);">SUBJECT & CHAPTER ACTIVITY LOG & GAUGES</div>
+                <div style="font-size: 0.75rem; color: var(--text-sub); margin-bottom: 12px;">Daily, Weekly, ya Monthly ke adhar par subject-wise activity aur progress meters:</div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; text-align: center; margin-bottom: 15px; background: rgba(3,7,18,0.4); padding: 10px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.05);">
+                    <div>
+                        <div style="font-size: 0.6rem; color: var(--cyan-glow); font-weight: bold; margin-bottom: 4px;">PHYSICS</div>
+                        <div id="gaugeLogPhysHours" style="font-size: 0.9rem; font-weight: 800; color: #fff;">0.0 h</div>
+                        <div id="gaugeLogPhysQues" style="font-size: 0.65rem; color: var(--text-sub);">0 Qs | 0 Lec</div>
+                    </div>
+                    <div>
+                        <div style="font-size: 0.6rem; color: var(--purple-glow); font-weight: bold; margin-bottom: 4px;">CHEMISTRY</div>
+                        <div id="gaugeLogChemHours" style="font-size: 0.9rem; font-weight: 800; color: #fff;">0.0 h</div>
+                        <div id="gaugeLogChemQues" style="font-size: 0.65rem; color: var(--text-sub);">0 Qs | 0 Lec</div>
+                    </div>
+                    <div>
+                        <div style="font-size: 0.6rem; color: var(--success-color); font-weight: bold; margin-bottom: 4px;">MATHS</div>
+                        <div id="gaugeLogMathHours" style="font-size: 0.9rem; font-weight: 800; color: #fff;">0.0 h</div>
+                        <div id="gaugeLogMathQues" style="font-size: 0.65rem; color: var(--text-sub);">0 Qs | 0 Lec</div>
+                    </div>
+                </div>
+                <div id="analyticsDetailsContainer" style="display: flex; flex-direction: column; gap: 10px;">
+                    <div style="text-align: center; color: var(--text-sub); font-size: 0.75rem; padding: 20px;">Koyi data uplabdh nahi hai.</div>
+                </div>
+            </div>
+        </div>
+
+<!-- NAYA ADVANCED HUD & SUBJECT GAUGE SECTION -->
+<div id="view-smart-hud" class="section-view active">
+    
+    <!-- Exam Alert Banner -->
+    <div style="background: rgba(239, 68, 68, 0.1); border: 1px solid #ef4444; border-radius: 14px; padding: 12px 16px; margin-bottom: 16px; display: flex; align-items: center; gap: 12px;">
+        <span style="font-size: 1.3rem;">⚠️</span>
+        <div>
+            <div style="color: #ef4444; font-weight: bold; font-size: 0.8rem;">JEE PREPARATION STATUS</div>
+            <div style="color: var(--text-sub); font-size: 0.73rem;" id="smartExamAlertText">Analyzing your daily streak, backlogs, and test logs...</div>
+        </div>
+    </div>
+
+    <!-- Master Readiness Ring Main Card -->
+    <div class="hud-card" style="border-color: var(--cyan-glow); text-align: center; padding: 20px; margin-bottom: 15px;">
+        <div class="card-header-sm" style="color: var(--cyan-glow); margin-bottom: 15px;">ARJUNA READINESS METRICS</div>
+        
+        <!-- Concentric Ring Container -->
+        <div style="position: relative; width: 150px; height: 150px; margin: 0 auto 15px auto; display: flex; align-items: center; justify-content: center;">
+            <canvas id="akivaMasterRing" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;"></canvas>
+            <div style="position: relative; z-index: 2; display: flex; flex-direction: column; align-items: center;">
+                <div id="akivaReadinessPercent" style="font-size: 1.8rem; font-weight: 900; color: #fff;">0%</div>
+                <div style="font-size: 0.6rem; color: var(--cyan-glow); font-weight: bold; text-transform: uppercase;">JEE READINESS</div>
+            </div>
+        </div>
+
+        <!-- Estimated Rank & Position Badges -->
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 15px;">
+            <div style="background: rgba(3,7,18,0.6); border: 1px solid rgba(255,255,255,0.08); border-radius: 10px; padding: 10px;">
+                <div style="font-size: 0.6rem; color: var(--text-sub);">ESTIMATED AIR RANK</div>
+                <div id="akivaEstRank" style="font-size: 0.95rem; font-weight: bold; color: var(--warning-color); margin-top: 2px;">Calculating...</div>
+            </div>
+            <div style="background: rgba(3,7,18,0.6); border: 1px solid rgba(255,255,255,0.08); border-radius: 10px; padding: 10px;">
+                <div style="font-size: 0.6rem; color: var(--text-sub);">BATCH POSITION</div>
+                <div id="akivaBatchPos" style="font-size: 0.95rem; font-weight: bold; color: var(--cyan-glow); margin-top: 2px;">Top Tier</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Detailed Granular Performance Breakdown Cards -->
+    <div class="hud-card" style="border-color: var(--purple-glow); margin-bottom: 15px;">
+        <div class="card-header-sm" style="color: var(--purple-glow);">GRANULAR PERFORMANCE BREAKDOWN</div>
+        <div style="display: flex; flex-direction: column; gap: 10px; margin-top: 10px;">
+            
+            <div style="background: rgba(15, 23, 42, 0.6); padding: 10px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.05);">
+                <div style="display: flex; justify-content: space-between; font-size: 0.75rem; font-weight: bold; margin-bottom: 6px;">
+                    <span>Syllabus Completion</span>
+                    <span id="akivaSyllabusText" style="color: var(--cyan-glow);">0%</span>
+                </div>
+                <div style="width: 100%; height: 6px; background: rgba(255,255,255,0.08); border-radius: 3px; overflow: hidden;">
+                    <div id="akivaSyllabusBar" style="width: 0%; height: 100%; background: var(--cyan-glow); transition: width 0.6s ease;"></div>
+                </div>
+            </div>
+
+            <div style="background: rgba(15, 23, 42, 0.6); padding: 10px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.05);">
+                <div style="display: flex; justify-content: space-between; font-size: 0.75rem; font-weight: bold; margin-bottom: 6px;">
+                    <span>Backlog Clearance Status</span>
+                    <span id="akivaBacklogText" style="color: var(--warning-color);">0 Pending</span>
+                </div>
+                <div style="width: 100%; height: 6px; background: rgba(255,255,255,0.08); border-radius: 3px; overflow: hidden;">
+                    <div id="akivaBacklogBar" style="width: 0%; height: 100%; background: var(--warning-color); transition: width 0.6s ease;"></div>
+                </div>
+            </div>
+
+            <div style="background: rgba(15, 23, 42, 0.6); padding: 10px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.05);">
+                <div style="display: flex; justify-content: space-between; font-size: 0.75rem; font-weight: bold; margin-bottom: 6px;">
+                    <span>Error Book Resolution</span>
+                    <span id="akivaErrorText" style="color: var(--success-color);">0%</span>
+                </div>
+                <div style="width: 100%; height: 6px; background: rgba(255,255,255,0.08); border-radius: 3px; overflow: hidden;">
+                    <div id="akivaErrorBar" style="width: 0%; height: 100%; background: var(--success-color); transition: width 0.6s ease;"></div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Subject Wise Circular Gauges & Backlog Summary -->
+    <div class="hud-card" style="border-color: var(--cyan-glow); margin-bottom: 15px; text-align: center;">
+        <div class="card-header-sm" style="color: var(--cyan-glow); margin-bottom: 10px;">SUBJECT-WISE PROGRESS & BACKLOG HUD</div>
+        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px;">
+            <div style="background: rgba(3,7,18,0.5); padding: 10px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.08);">
+                <div style="font-size: 0.65rem; color: var(--text-sub); font-weight: bold; margin-bottom: 6px; text-transform: uppercase;">PHYSICS</div>
+                <div style="width: 65px; height: 65px; margin: 0 auto; position: relative;">
+                    <canvas id="gaugeSub_physics"></canvas>
+                    <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 0.7rem; font-weight: bold; color: #fff;" id="percentSub_physics">0%</div>
+                </div>
+                <div style="font-size: 0.6rem; color: var(--warning-color); margin-top: 6px;" id="backlogSub_physics">Backlog: 0</div>
+            </div>
+            <div style="background: rgba(3,7,18,0.5); padding: 10px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.08);">
+                <div style="font-size: 0.65rem; color: var(--text-sub); font-weight: bold; margin-bottom: 6px; text-transform: uppercase;">CHEMISTRY</div>
+                <div style="width: 65px; height: 65px; margin: 0 auto; position: relative;">
+                    <canvas id="gaugeSub_chemistry"></canvas>
+                    <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 0.7rem; font-weight: bold; color: #fff;" id="percentSub_chemistry">0%</div>
+                </div>
+                <div style="font-size: 0.6rem; color: var(--warning-color); margin-top: 6px;" id="backlogSub_chemistry">Backlog: 0</div>
+            </div>
+            <div style="background: rgba(3,7,18,0.5); padding: 10px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.08);">
+                <div style="font-size: 0.65rem; color: var(--text-sub); font-weight: bold; margin-bottom: 6px; text-transform: uppercase;">MATHS</div>
+                <div style="width: 65px; height: 65px; margin: 0 auto; position: relative;">
+                    <canvas id="gaugeSub_maths"></canvas>
+                    <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 0.7rem; font-weight: bold; color: #fff;" id="percentSub_maths">0%</div>
+                </div>
+                <div style="font-size: 0.6rem; color: var(--warning-color); margin-top: 6px;" id="backlogSub_maths">Backlog: 0</div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<!-- LEADERBOARD & SOCIAL CONNECT VIEW -->
+<div id="view-leaderboard" class="section-view" style="display: none; padding: 15px;">
+    
+    <!-- 1. ARJUNA BATTLE PASS CARD (Jo gayab ho gaya tha) -->
+    <div class="hud-card" style="border-color: #ffcc00; margin-bottom: 15px; padding: 16px; text-align: center;">
+        <div style="font-size: 0.85rem; font-weight: bold; color: #ffcc00; margin-bottom: 4px;">ARJUNA ELITE BATTLE PASS (XP & STREAK)</div>
+        <div style="font-size: 0.7rem; color: var(--text-sub); margin-bottom: 12px;">Padhai karo, XP earn karo aur IIT Bombay ka safar tay karo!</div>
+
+        <!-- CURRENT RANK DISPLAY -->
+        <div style="background: rgba(255, 204, 0, 0.08); border: 1px solid rgba(255, 204, 0, 0.3); border-radius: 12px; padding: 12px; margin-bottom: 12px;">
+            <div style="font-size: 0.65rem; color: var(--text-sub); text-transform: uppercase;">CURRENT RANK</div>
+            <div id="leaderboardRankTitle" style="font-size: 1.3rem; font-weight: bold; color: #ffcc00; margin: 2px 0;">Arjuna Scholar</div>
+            <div style="font-size: 0.75rem; color: #fff;">Total XP: <b id="leaderboardTotalXp" style="color: #ffcc00;">0 XP</b></div>
+        </div>
+
+        <!-- STREAK & LEVEL -->
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 12px;">
+            <div style="background: rgba(245, 158, 11, 0.1); border: 1px solid rgba(245, 158, 11, 0.3); padding: 10px; border-radius: 8px;">
+                <div style="font-size: 0.6rem; color: var(--text-sub);">DAILY STREAK</div>
+                <div id="leaderboardStreakVal" style="font-size: 1.1rem; font-weight: bold; color: #f59e0b;">0 Days</div>
+            </div>
+            <div style="background: rgba(0, 240, 255, 0.1); border: 1px solid rgba(0, 240, 255, 0.3); padding: 10px; border-radius: 8px;">
+                <div style="font-size: 0.6rem; color: var(--text-sub);">LEVEL</div>
+                <div id="leaderboardLevelVal" style="font-size: 1.1rem; font-weight: bold; color: var(--cyan-glow);">Level 1</div>
+            </div>
+        </div>
+
+        <!-- DAILY CHECK-IN BUTTON -->
+        <button id="claimDailyBtn" onclick="claimDailyCheckIn()" style="width: 100%; background: linear-gradient(135deg, #00f0ff, #0077ff); color: #000; font-weight: bold; border: none; padding: 10px; border-radius: 8px; cursor: pointer; font-size: 0.8rem; box-shadow: 0 0 10px rgba(0,240,255,0.3);">
+            Claim Daily Check-In (+50 XP)
+        </button>
+    </div>
+
+    <!-- 2. LEADERBOARD TABLE CARD -->
+    <div class="hud-card" style="border-color: #ec4899; padding: 16px;">
+        <div style="font-size: 0.85rem; font-weight: bold; color: #ec4899; margin-bottom: 4px;">🏆 ARJUNA ELITE LEADERBOARD</div>
+        <div style="font-size: 0.7rem; color: var(--text-sub); margin-bottom: 12px;">Dosto aur doosre aspirants ke sath apni rank aur XP compare karein:</div>
+
+        <!-- LEADERBOARD LIST CONTAINER -->
+        <div id="leaderboardListContainer" style="display: flex; flex-direction: column; gap: 8px;">
+            <!-- Dynamically rendered via JS -->
+        </div>
+    </div>
+
+</div>
+
+
+<!-- MODULE QUESTION TRACKER VIEW -->
+<div id="view-module" class="section-view" style="display: none;">
+    
+    <!-- Top Banner Header -->
+    <div class="hud-card" style="background: rgba(15, 23, 42, 0.7); border-color: var(--cyan-glow); padding: 16px;">
+        <div style="font-size: 0.7rem; color: var(--cyan-glow); font-weight: bold; letter-spacing: 1px;">MODULE & QUESTION TRACKER HUD</div>
+        <div style="font-size: 0.75rem; color: var(--text-sub); margin-top: 2px;">Track your solved questions across all 8 module levels per chapter.</div>
+    </div>
+
+    <!-- Subject Selection Tabs -->
+    <div style="display: flex; gap: 8px; margin-bottom: 12px; overflow-x: auto; padding-bottom: 4px;">
+        <button class="sub-btn active" id="btn-mod-physics" onclick="switchModuleSubject('physics')">PHYSICS</button>
+        <button class="sub-btn" id="btn-mod-chemistry" onclick="switchModuleSubject('chemistry')">CHEMISTRY</button>
+        <button class="sub-btn" id="btn-mod-maths" onclick="switchModuleSubject('maths')">MATHS</button>
+    </div>
+
+    <!-- Chapters Module List Container -->
+    <div id="moduleChaptersContainer" style="display: flex; flex-direction: column; gap: 12px;"></div>
+</div>
+
+        <!-- Report Card Modal -->
+        <div id="reportCardModal" style="display:none; padding: 25px; background: #070b19; color: #fff; width: 650px; font-family: sans-serif; border: 2px solid #00f0ff; border-radius: 12px;">
+            <h2 style="color: #00f0ff; text-align: center; margin-bottom: 5px;">ARJUNA JEE - OFFICIAL PERFORMANCE REPORT</h2>
+            <p style="text-align: center; font-size: 0.8rem; color: #a0aec0; margin-bottom: 20px;"> Academic Tracker</p>
+            <div style="background: rgba(255,255,255,0.05); padding: 12px; border-radius: 8px; margin-bottom: 15px;">
+                <p style="margin: 4px 0;"><b>Student Name:</b> <span id="repStudentName">Arjuna Student</span></p>
+                <p style="margin: 4px 0;"><b>Academic Track:</b> Class 11 JEE 2028</p>
+            </div>
+            <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 15px; text-align: center;">
+                <div style="background: rgba(0, 240, 255, 0.1); padding: 10px; border-radius: 8px;">
+                    <div style="font-size: 0.7rem; color: #a0aec0;">Physics Progress</div>
+                    <div id="repPhys" style="font-size: 1.1rem; font-weight: bold; color: #00f0ff;">0%</div>
+                </div>
+                <div style="background: rgba(168, 85, 247, 0.1); padding: 10px; border-radius: 8px;">
+                    <div style="font-size: 0.7rem; color: #a0aec0;">Chemistry Progress</div>
+                    <div id="repChem" style="font-size: 1.1rem; font-weight: bold; color: #a855f7;">0%</div>
+                </div>
+                <div style="background: rgba(16, 185, 129, 0.1); padding: 10px; border-radius: 8px;">
+                    <div style="font-size: 0.7rem; color: #a0aec0;">Maths Progress</div>
+                    <div id="repMath" style="font-size: 1.1rem; font-weight: bold; color: #10b981;">0%</div>
+                </div>
+            </div>
+            <div style="background: rgba(255,255,255,0.05); padding: 12px; border-radius: 8px; font-size: 0.85rem;">
+                <p style="margin: 6px 0;"><b>Total Questions Solved:</b> <span id="repTotalQ">0</span></p>
+                <p style="margin: 6px 0;"><b>Total Lectures Completed:</b> <span id="repTotalLec">0</span></p>
+            </div>
+        </div>
+
+<!-- FOCUS TIMER SECTION VIEW -->
+<div id="view-focus" class="section-view" style="display: none;">
+    <div class="hud-card" style="border-color: var(--cyan-glow); text-align: center; padding: 24px;">
+        <div class="card-header-sm" style="color: var(--cyan-glow); margin-bottom: 16px;">DEEP FOCUS & STUDY TIMER</div>
+        
+        <!-- Mode Switch Buttons -->
+        <div style="display: flex; justify-content: center; gap: 8px; margin-bottom: 20px;">
+            <button class="stage-chip" onclick="setTimerMode(25, 'Pomodoro')" id="modePomodoro" style="cursor: pointer; padding: 6px 12px; background: rgba(0,240,255,0.3); border: 1px solid var(--cyan-glow); color: #fff; border-radius: 6px;">25m Study</button>
+            <button class="stage-chip" onclick="setTimerMode(5, 'Short Break')" id="modeShort" style="cursor: pointer; padding: 6px 12px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.2); color: #fff; border-radius: 6px;">5m Break</button>
+            <button class="stage-chip" onclick="setTimerMode(50, 'Deep Work')" id="modeDeep" style="cursor: pointer; padding: 6px 12px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.2); color: #fff; border-radius: 6px;">50m Deep</button>
+        </div>
+        
+        <!-- Circular Progress Ring (SVG) & Timer Display -->
+        <div style="margin: 0 auto 20px auto; width: 180px; height: 180px; position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center;">
+            <svg style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; transform: rotate(-90deg);" viewBox="0 0 100 100">
+                <circle cx="50" cy="50" r="42" stroke="rgba(255,255,255,0.05)" stroke-width="8" fill="none"></circle>
+                <circle id="timerProgressRing" cx="50" cy="50" r="42" stroke="#00f0ff" stroke-width="8" fill="none" stroke-dasharray="264" stroke-dashoffset="0" stroke-linecap="round" style="transition: stroke-dashoffset 0.5s linear, stroke 0.3s ease;"></circle>
+            </svg>
+            <div style="position: relative; z-index: 2; display: flex; flex-direction: column; align-items: center;">
+                <div id="timerDisplay" style="font-size: 2.2rem; font-weight: bold; color: #fff; font-family: monospace;">25:00</div>
+                <div id="timerStatusLabel" style="font-size: 0.65rem; color: var(--text-sub); margin-top: 2px; text-transform: uppercase;">Pomodoro Mode</div>
+            </div>
+        </div>
+
+        <!-- Start/Pause & Reset Controls -->
+        <div style="display: flex; justify-content: center; gap: 10px; margin-bottom: 16px;">
+            <button id="timerToggleBtn" class="btn-action" style="background: var(--cyan-glow); color: #030712; font-weight: bold; max-width: 140px; border: none; cursor: pointer; padding: 10px 20px; border-radius: 8px;" onclick="toggleTimer()">START</button>
+            <button class="btn-action" style="background: transparent; border: 1px solid var(--text-sub); color: var(--text-sub); max-width: 100px; cursor: pointer; padding: 10px 16px; border-radius: 8px;" onclick="resetTimer()">RESET</button>
+        </div>
+
+        <!-- Focus Stats (Minutes & Sessions) -->
+        <div style="display: flex; justify-content: space-around; background: rgba(3,7,18,0.5); padding: 10px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.05); font-size: 0.75rem;">
+            <div>Total Focus: <b id="totalFocusMinutes" style="color: var(--cyan-glow);">0 Mins</b></div>
+            <div>Sessions: <b id="totalFocusSessions" style="color: var(--purple-glow);">0</b></div>
+        </div>
+    </div>
+</div>
+
+<!-- PW STYLE APP HUB DASHBOARD VIEW -->
+<div id="view-app-hub" class="section-view active">
+    
+    <!-- Aaj ka mission -->
+    <section class="hud-card home-hero" aria-label="Aaj ka mission">
+        <svg class="rings" viewBox="0 0 120 120" width="116" height="116" aria-hidden="true">
+            <g fill="none" stroke-linecap="round">
+                <circle cx="60" cy="60" r="52" stroke="rgba(255,255,255,.12)" stroke-width="7"/>
+                <circle id="heroRing" cx="60" cy="60" r="52" stroke="#2EC4B6" stroke-width="7" stroke-dasharray="0 327" transform="rotate(-90 60 60)"/>
+                <circle cx="60" cy="60" r="38" stroke="rgba(255,255,255,.08)" stroke-width="3"/>
+                <circle cx="60" cy="60" r="24" stroke="rgba(255,255,255,.06)" stroke-width="3"/>
+            </g>
+            <text id="heroDays" x="60" y="62" text-anchor="middle" font-size="30" font-weight="700" fill="#EEF1F7" font-family="Bricolage Grotesque,sans-serif">0</text>
+            <text x="60" y="80" text-anchor="middle" font-size="10" fill="#B4BED3">din baaki</text>
+        </svg>
+        <div class="hero-text">
+            <div class="hero-name" id="heroName">Namaste</div>
+            <div class="hero-line" id="heroLine"></div>
+            <div class="hero-actions"><button class="hero-chip" id="heroDone" onclick="switchTab('todo')">Aaj ka plan banao</button><button class="hero-chip hero-go" id="heroGo" onclick="switchTab('focus')" hidden>Focus shuru karo</button></div>
+        </div>
+    </section>
+
+    <!-- Main Grid Items -->
+<div class="hub-grid" style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px;">
+        <div class="hub-grid-item" onclick="switchTab('todo')">
+            <div class="hub-icon-box" style="color: #ffcc00;"><i class="fas fa-check-square"></i></div>
+            <div class="hub-icon-label">Aaj ka Plan</div>
+        <div class="hub-sub">Aaj kya padhna hai</div></div>
+    <div class="hub-grid-item" onclick="openSectionWithBack('focus')">
+        <div class="hub-icon-box" style="color: #00f0ff;"><i class="fas fa-stopwatch"></i></div>
+        <div class="hub-icon-label">Focus Mode</div>
+    <div class="hub-sub">Distraction band</div></div>
+    <div class="hub-grid-item" onclick="openSectionWithBack('practice')">
+        <div class="hub-icon-box" style="color: #10b981;"><i class="fas fa-pencil-alt"></i></div>
+        <div class="hub-icon-label">Practice Zone</div>
+    <div class="hub-sub">DPP aur questions</div></div>
+    <div class="hub-grid-item" onclick="openSectionWithBack('errorbook')">
+        <div class="hub-icon-box" style="color: #ef4444;"><i class="fas fa-exclamation-triangle"></i></div>
+        <div class="hub-icon-label">Galti Book</div>
+    <div class="hub-sub">Galtiyan sudharo</div></div>
+    <div class="hub-grid-item" onclick="openSectionWithBack('backlog')">
+        <div class="hub-icon-box" style="color: #f59e0b;"><i class="fas fa-history"></i></div>
+        <div class="hub-icon-label">Backlog Clear</div>
+    <div class="hub-sub">Pending chapters</div></div>
+    <div class="hub-grid-item" onclick="openSectionWithBack('dashboard')">
+        <div class="hub-icon-box" style="color: #3b82f6;"><i class="fas fa-th-large"></i></div>
+        <div class="hub-icon-label">Progress</div>
+    <div class="hub-sub">Kitna ho gaya</div></div>
+</div>
+
+<!-- Extra Grid Items -->
+<div id="extraHubItems">
+    <div style="display: contents;">
+    <div class="hub-grid-item" onclick="openSectionWithBack('roadmap')">
+        <div class="hub-icon-box" style="color: #6366f1;"><i class="fas fa-book-open"></i></div>
+        <div class="hub-icon-label">Syllabus Map</div>
+    </div>
+    <div class="hub-grid-item" onclick="openSectionWithBack('smart-hud')">
+        <div class="hub-icon-box" style="color: var(--cyan-glow);"><i class="fas fa-chart-pie"></i></div>
+        <div class="hub-icon-label">Rank Radar</div>
+    </div>
+<div class="hub-grid-item" onclick="switchTab('smart-planner')">
+    <div class="hub-icon-box" style="color: #10b981;"><i class="fas fa-calendar-alt"></i></div>
+    <div class="hub-icon-label">Auto Planner</div>
+</div>
+    <div class="hub-grid-item" onclick="openSectionWithBack('formulas')">
+        <div class="hub-icon-box" style="color: #a855f7;"><i class="fas fa-bolt"></i></div>
+        <div class="hub-icon-label">Formula Vault</div>
+    </div>
+        <div class="hub-grid-item" onclick="openSectionWithBack('flashcards')">
+            <div class="hub-icon-box" style="color: #ec4899;"><i class="fas fa-lightbulb"></i></div>
+            <div class="hub-icon-label">Flashcards</div>
+        </div>
+        <div class="hub-grid-item" onclick="openSectionWithBack('analytics')">
+            <div class="hub-icon-box" style="color: #ec4899;"><i class="fas fa-chart-line"></i></div>
+            <div class="hub-icon-label">Study Stats</div>
+        </div>
+        <div class="hub-grid-item" onclick="openSectionWithBack('testanalysis')">
+            <div class="hub-icon-box" style="color: #fbbf24;"><i class="fas fa-chart-bar"></i></div>
+            <div class="hub-icon-label">Test Lab</div>
+        </div>
+        <div class="hub-grid-item" onclick="openSectionWithBack('lofi')">
+            <div class="hub-icon-box" style="color: #8b5cf6;"><i class="fas fa-headphones"></i></div>
+            <div class="hub-icon-label">Lofi Radio</div>
+        </div>
+        <div class="hub-grid-item" onclick="openSectionWithBack('settings')">
+            <div class="hub-icon-box" style="color: #64748b;"><i class="fas fa-cog"></i></div>
+            <div class="hub-icon-label">Settings</div>
+        </div>
+    </div>
+</div>
+
+<!-- Toggle Button -->
+<div style="text-align: center; margin-top: 18px;">
+    <button id="hubToggleBtn" onclick="toggleHubExtension()" style="background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.15); color: #fff; padding: 8px 20px; border-radius: 20px; font-size: 0.75rem; font-weight: bold; cursor: pointer; display: inline-flex; align-items: center; gap: 6px;">
+        <span id="hubToggleText">Aur features</span> <i id="hubToggleIcon" class="fas fa-chevron-down" style="font-size: 0.65rem;"></i>
+    </button>
+</div>
+
+</div><!-- /view-app-hub -->
+</div><!-- /container -->
+
+    <!-- FLOATING 5-ICON NAVIGATION BAR -->
+<div id="floatingNavigationDock" style="position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: rgba(15, 23, 42, 0.85); backdrop-filter: blur(12px); border: 1px solid rgba(0, 240, 255, 0.3); border-radius: 30px; padding: 8px 16px; display: flex; align-items: center; gap: 18px; z-index: 9999; box-shadow: 0 10px 30px rgba(0,0,0,0.6);">
+    
+    <!-- 1. Smart HUD -->
+    <div onclick="openSectionWithBack('smart-hud')" title="Rank Radar" style="cursor: pointer; display: flex; align-items: center; justify-content: center; width: 38px; height: 38px; border-radius: 50%; background: rgba(0, 240, 255, 0.1); border: 1px solid rgba(0, 240, 255, 0.4); color: var(--cyan-glow); transition: all 0.2s;">
+        <i class="fas fa-microchip" style="font-size: 1rem;"></i>
+    </div>
+
+    <!-- 2. To-Do List -->
+    <div onclick="switchTab('todo')" title="Aaj ka Plan" style="cursor: pointer; display: flex; align-items: center; justify-content: center; width: 38px; height: 38px; border-radius: 50%; background: rgba(255, 204, 0, 0.1); border: 1px solid rgba(255, 204, 0, 0.4); color: #ffcc00; transition: all 0.2s;">
+        <i class="fas fa-check-square" style="font-size: 1rem;"></i>
+    </div>
+
+    <!-- 3. Main View (Hub / Dashboard) -->
+    <div onclick="goBackToHub()" title="Home" style="cursor: pointer; display: flex; align-items: center; justify-content: center; width: 42px; height: 42px; border-radius: 50%; background: linear-gradient(135deg, #00f0ff, #0077ff); color: #000; box-shadow: 0 0 12px rgba(0,240,255,0.5); transition: all 0.2s;">
+        <i class="fas fa-home" style="font-size: 1.1rem; color: #000;"></i>
+    </div>
+
+    <!-- 4. Focus Timer -->
+    <div onclick="switchTab('focus')" title="Focus Mode" style="cursor: pointer; display: flex; align-items: center; justify-content: center; width: 38px; height: 38px; border-radius: 50%; background: rgba(168, 85, 247, 0.1); border: 1px solid rgba(168, 85, 247, 0.4); color: var(--purple-glow); transition: all 0.2s;">
+        <i class="fas fa-stopwatch" style="font-size: 1rem;"></i>
+    </div>
+
+    <!-- 5. Local Song / Audio Player -->
+    <div onclick="openLocalMusicModal()" title="Music" style="cursor: pointer; display: flex; align-items: center; justify-content: center; width: 38px; height: 38px; border-radius: 50%; background: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.4); color: var(--success-color); transition: all 0.2s;">
+        <i class="fas fa-music" style="font-size: 1rem;"></i>
+    </div>
+
+</div>
+
+<!-- LOCAL MUSIC PLAYER MODAL & APP LOCK OVERLAY -->
+<div id="localMusicModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(3,7,18,0.9); z-index: 10000; justify-content: center; align-items: center;">
+    <div style="background: #0f172a; border: 1px solid var(--cyan-glow); padding: 20px; border-radius: 16px; width: 90%; max-width: 400px; text-align: center;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+            <span style="font-size: 0.9rem; font-weight: bold; color: var(--cyan-glow);">🎵 LOCAL MUSIC PLAYER</span>
+            <button onclick="closeLocalMusicModal()" style="background: none; border: none; color: #ef4444; font-size: 1.1rem; cursor: pointer;">✕</button>
+        </div>
+        <input type="file" id="localAudioFilePicker" accept="audio/*" multiple onchange="loadLocalAudioFiles(this)" style="width: 100%; font-size: 0.75rem; color: #fff; margin-bottom: 15px; background: rgba(255,255,255,0.05); padding: 8px; border-radius: 8px;">
+        <audio id="floatingCustomAudioPlayer" controls style="width: 100%; margin-bottom: 15px;"></audio>
+        <div id="localPlaylistContainer" style="max-height: 150px; overflow-y: auto; text-align: left; font-size: 0.75rem; color: var(--text-sub);"></div>
+    </div>
+</div>
+
+
+    <script src="app.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="bg3d.js"></script>
+    <script src="home.js"></script>
+    <script src="intro.js"></script>
+</body>
+</html>
